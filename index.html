@@ -17,8 +17,8 @@
 
         html, body {
             overflow-x: hidden;
-            background: #06060f;
-            color: #e2e8f0;
+            background: #140505;
+            color: #fdfbf7;
             font-family: 'Inter', system-ui, sans-serif;
         }
 
@@ -52,11 +52,11 @@
             position: fixed;
             top: 0;
             left: 0;
-            height: 3px;
+            height: 4px;
             width: 0%;
-            background: linear-gradient(90deg, #6366f1, #8b5cf6, #c084fc);
+            background: linear-gradient(90deg, #b32400, #ff6600, #ffcc00);
             z-index: 200;
-            box-shadow: 0 0 14px rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 14px rgba(255, 102, 0, 0.5);
         }
 
         .scroll-hint {
@@ -64,7 +64,7 @@
             bottom: 36px;
             left: 50%;
             transform: translateX(-50%);
-            color: rgba(226, 232, 240, 0.45);
+            color: rgba(253, 251, 247, 0.55);
             font-size: 12px;
             font-family: 'Space Grotesk', sans-serif;
             letter-spacing: 3px;
@@ -78,6 +78,7 @@
             text-align: center;
             font-size: 18px;
             margin-top: 6px;
+            color: #ffcc00;
             animation: bobArrow 2s ease-in-out infinite;
         }
 
@@ -97,8 +98,8 @@
             background: radial-gradient(
                 ellipse 70% 65% at 50% 50%,
                 transparent 0%,
-                rgba(6, 6, 15, 0.30) 70%,
-                rgba(6, 6, 15, 0.80) 100%
+                rgba(18, 2, 2, 0.30) 70%,
+                rgba(18, 2, 2, 0.88) 100%
             );
         }
 
@@ -110,28 +111,170 @@
             flex-direction: column;
             justify-content: center;
             overflow: hidden;
+            background: rgba(22, 6, 6, 0.92);
+            border: 1.5px solid rgba(255, 179, 0, 0.38);
+            border-radius: 12px;
+            padding: 14px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
         }
         .fo-section-title {
-            font: 700 16px/1.25 'Space Grotesk', sans-serif;
-            color: #e2e8f0;
-            margin-bottom: 5px;
+            font: 700 15px/1.25 'Space Grotesk', sans-serif;
+            color: #ffe680;
+            margin-bottom: 6px;
             overflow: hidden;
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 2;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
         }
         .fo-section-body {
-            font: 400 11px/1.55 'Inter', sans-serif;
-            color: rgba(226, 232, 240, 0.78);
+            font: 400 11px/1.5 'Inter', sans-serif;
+            color: #e5ccb3;
             text-align: left;
             overflow: hidden;
             display: -webkit-box;
             -webkit-box-orient: vertical;
             -webkit-line-clamp: 6;
         }
+
+        /* ---- Browser Warning Popup ---- */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 3, 3, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .popup-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .popup-card {
+            background: #1c0909;
+            border: 2px solid #ffb300;
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 179, 0, 0.15);
+            animation: popupScale 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes popupScale {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .popup-title {
+            font: 700 20px 'Space Grotesk', sans-serif;
+            color: #ffe680;
+            margin-bottom: 12px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+        }
+        .popup-text {
+            font: 400 13px/1.6 'Inter', sans-serif;
+            color: #e5ccb3;
+            margin-bottom: 24px;
+        }
+        .popup-btn {
+            background: linear-gradient(135deg, #ff6600, #ffcc00);
+            border: none;
+            color: #120202;
+            padding: 10px 24px;
+            font: 600 13px 'Space Grotesk', sans-serif;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 10px rgba(255, 102, 0, 0.3);
+        }
+        .popup-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(255, 102, 0, 0.45);
+        }
+        .popup-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* ---- Loading Spinner ---- */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #140505;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .loader-overlay.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .spinner {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            margin-bottom: 24px;
+            animation: spin 2.5s linear infinite;
+        }
+        .spinner .dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            margin: -5px;
+        }
+        .spinner .d1 { transform: rotate(0deg) translate(22px); background: #ffe680; }
+        .spinner .d2 { transform: rotate(120deg) translate(22px); background: #ff6600; }
+        .spinner .d3 { transform: rotate(240deg) translate(22px); background: #ffb300; }
+        
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        .loader-text {
+            font: 600 12px 'Space Grotesk', sans-serif;
+            color: #e5ccb3;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
+    <!-- Loading Spinner Overlay -->
+    <div id="loader" class="loader-overlay">
+        <div class="spinner">
+            <div class="dot d1"></div>
+            <div class="dot d2"></div>
+            <div class="dot d3"></div>
+        </div>
+        <div class="loader-text">Loading Timeline</div>
+    </div>
+
+    <!-- Browser optimization popup modal -->
+    <div id="browserPopup" class="popup-overlay">
+        <div class="popup-card">
+            <div class="popup-title">Optimization Recommended</div>
+            <div class="popup-text">
+                This timeline uses high-performance SVG animations and organic dot-art rendering. For the best, smoothest visual experience, we recommend opening this page in a <strong>Chromium-based browser</strong> (like Google Chrome, Microsoft Edge, or Brave).
+            </div>
+            <button class="popup-btn" onclick="closePopup()">Continue Anyway</button>
+        </div>
+    </div>
+
     <div id="scroll-driver"></div>
 
     <div id="viewport-container">
@@ -371,7 +514,7 @@ Indeed, sample text is nice to have around when designing and prototyping new id
         // ================================================
         //  BUILD SPIRAL TRACK  (visual backdrop)
         // ================================================
-        let svg, defs;
+        let svg, defs, sceneGroup;
 
         function buildTrackOutlineD() {
             const R = 12; // corner radius
@@ -429,88 +572,238 @@ Indeed, sample text is nice to have around when designing and prototyping new id
             return d;
         }
 
-        function buildTrack() {
+        function buildTrack(n) {
             svg = document.getElementById('scene');
 
             defs = sv('defs');
             defs.innerHTML = `
-                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                    <feGaussianBlur stdDeviation="3" result="b"/>
-                    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-                <filter id="imgGlow" x="-30%" y="-30%" width="160%" height="160%">
-                    <feGaussianBlur stdDeviation="8" in="SourceAlpha" result="s"/>
-                    <feOffset dy="4" result="o"/>
-                    <feFlood flood-color="rgba(99,102,241,0.3)" result="c"/>
-                    <feComposite in="c" in2="o" operator="in" result="cs"/>
-                    <feMerge><feMergeNode in="cs"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
                 <radialGradient id="ng1" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="rgba(99,102,241,0.12)"/>
-                    <stop offset="100%" stop-color="rgba(99,102,241,0)"/>
+                    <stop offset="0%" stop-color="rgba(179,36,0,0.15)"/>
+                    <stop offset="100%" stop-color="rgba(179,36,0,0)"/>
                 </radialGradient>
                 <radialGradient id="ng2" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="rgba(168,85,247,0.09)"/>
-                    <stop offset="100%" stop-color="rgba(168,85,247,0)"/>
+                    <stop offset="0%" stop-color="rgba(255,153,0,0.12)"/>
+                    <stop offset="100%" stop-color="rgba(255,153,0,0)"/>
                 </radialGradient>
                 <radialGradient id="ng3" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stop-color="rgba(34,211,238,0.06)"/>
-                    <stop offset="100%" stop-color="rgba(34,211,238,0)"/>
+                    <stop offset="0%" stop-color="rgba(89,49,24,0.15)"/>
+                    <stop offset="100%" stop-color="rgba(89,49,24,0)"/>
                 </radialGradient>
             `;
             svg.appendChild(defs);
 
-            // ---- Stars ----
-            const sg = sv('g', { opacity: 0.55 });
-            for (let i = 0; i < 200; i++) {
-                sg.appendChild(sv('circle', {
-                    cx: (Math.random() * 3400).toFixed(0),
-                    cy: (Math.random() * 2800).toFixed(0),
-                    r:  (Math.random() * 1.3 + 0.3).toFixed(2),
-                    fill: '#fff',
-                    opacity: (Math.random() * 0.5 + 0.08).toFixed(2)
-                }));
-            }
-            svg.appendChild(sg);
+            const w = parseInt(svg.getAttribute('width')) || 3400;
+            const h = parseInt(svg.getAttribute('height')) || 2800;
 
-            // ---- Nebula ----
-            svg.appendChild(sv('circle', { cx: 800, cy: 700, r: 520, fill: 'url(#ng1)' }));
-            svg.appendChild(sv('circle', { cx: 2400, cy: 1800, r: 480, fill: 'url(#ng2)' }));
-            svg.appendChild(sv('circle', { cx: 1700, cy: 450, r: 400, fill: 'url(#ng3)' }));
+            // We will collect all dot coordinates in groups
+            const dotGroups = {
+                // Background layers (mostly sienna, burgundy, dark sienna, crimson)
+                bgMaroon:   { stroke: '#3a0808', strokeWidth: 4.5, opacity: 0.65, pts: [] },
+                bgCrimson:  { stroke: '#8c1111', strokeWidth: 3.2, opacity: 0.75, pts: [] },
+                bgBrown:    { stroke: '#6b3c1b', strokeWidth: 2.8, opacity: 0.70, pts: [] },
+                
+                // Foreground layers (luminous ochre, gold, orange, cream)
+                fgGoldBright: { stroke: '#ffe680', strokeWidth: 3.5, opacity: 0.95, pts: [] },
+                fgGoldGlow:   { stroke: '#ff9900', strokeWidth: 8.0, opacity: 0.38, pts: [] },
+                fgGoldDeep:   { stroke: '#ffb300', strokeWidth: 3.0, opacity: 0.90, pts: [] },
+                fgOrange:     { stroke: '#ff6600', strokeWidth: 2.8, opacity: 0.85, pts: [] },
+                fgCrimson:    { stroke: '#b32400', strokeWidth: 3.0, opacity: 0.85, pts: [] },
+                fgSand:       { stroke: '#d9c3b0', strokeWidth: 2.2, opacity: 0.90, pts: [] }
+            };
+
+            // Helper to add a dot to a group
+            function addDot(group, x, y) {
+                if (x >= 0 && x <= w && y >= 0 && y <= h) {
+                    group.pts.push({ x: parseFloat(x.toFixed(1)), y: parseFloat(y.toFixed(1)) });
+                }
+            }
+
+            // ---- Background Dot clusters ----
+            const numClusters = 25;
+            const dotsPerCluster = 220;
+            for (let c = 0; c < numClusters; c++) {
+                const cx = Math.random() * w;
+                const cy = Math.random() * h;
+                const radius = 250 + Math.random() * 250;
+                const theme = Math.floor(Math.random() * 3);
+                
+                for (let d = 0; d < dotsPerCluster; d++) {
+                    const r = Math.sqrt(Math.random()) * radius;
+                    const a = Math.random() * 2 * Math.PI;
+                    const px = cx + r * Math.cos(a);
+                    const py = cy + r * Math.sin(a);
+                    
+                    const distFrac = r / radius;
+                    let grp;
+                    if (theme === 0) {
+                        grp = distFrac > 0.75 ? dotGroups.bgMaroon :
+                              (Math.random() > 0.45 ? dotGroups.bgCrimson : dotGroups.bgBrown);
+                    } else if (theme === 1) {
+                        grp = distFrac > 0.65 ? dotGroups.bgMaroon :
+                              (Math.random() > 0.50 ? dotGroups.bgBrown : dotGroups.bgCrimson);
+                    } else {
+                        grp = distFrac > 0.80 ? dotGroups.bgMaroon :
+                              (Math.random() > 0.40 ? dotGroups.bgCrimson : dotGroups.bgMaroon);
+                    }
+                    addDot(grp, px, py);
+                }
+            }
+
+            // Append background dots first
+            ['bgMaroon', 'bgCrimson', 'bgBrown'].forEach(key => {
+                const grp = dotGroups[key];
+                if (grp.pts.length === 0) return;
+                const pathD = grp.pts.map(p => `M${p.x},${p.y}h0.1`).join(' ');
+                sceneGroup.appendChild(sv('path', {
+                    d: pathD,
+                    fill: 'none',
+                    stroke: grp.stroke,
+                    'stroke-width': grp.strokeWidth,
+                    'stroke-linecap': 'round',
+                    opacity: grp.opacity
+                }));
+            });
+
+            // ---- Nebulas (warm earthy under-glows) ----
+            sceneGroup.appendChild(sv('circle', { cx: Math.floor(w * 0.25), cy: Math.floor(h * 0.25), r: 520, fill: 'url(#ng1)' }));
+            sceneGroup.appendChild(sv('circle', { cx: Math.floor(w * 0.70), cy: Math.floor(h * 0.65), r: 480, fill: 'url(#ng2)' }));
+            sceneGroup.appendChild(sv('circle', { cx: Math.floor(w * 0.50), cy: Math.floor(h * 0.15), r: 400, fill: 'url(#ng3)' }));
 
             const trackOutlineD = buildTrackOutlineD();
 
-            // ---- Track fill ----
-            svg.appendChild(sv('path', {
+            // ---- Track fill (dark crimson-black road) ----
+            sceneGroup.appendChild(sv('path', {
                 d: trackOutlineD,
-                fill: 'rgba(99,102,241,0.04)',
-                stroke: 'none'
+                fill: 'rgba(18, 2, 2, 0.88)',
+                stroke: 'rgba(255, 179, 0, 0.12)',
+                'stroke-width': 1.5
             }));
 
-            // ---- Center dashes ----
-            svg.appendChild(sv('path', {
-                d: pD(cPts), fill: 'none',
-                stroke: 'rgba(139,92,246,0.06)',
-                'stroke-width': 1, 'stroke-dasharray': '10,20'
-            }));
-
-            // ---- Walls & Caps (Unified outline) ----
-            svg.appendChild(sv('path', {
-                d: trackOutlineD,
-                fill: 'none',
-                stroke: 'rgba(139,92,246,0.38)',
-                'stroke-width': 1.5,
-                filter: 'url(#glow)'
-            }));
-
-            // ---- Guide dots ----
-            for (let i = 0; i <= 80; i++) {
-                const p = spiralPoint(i / 80);
-                svg.appendChild(sv('circle', {
-                    cx: p.x.toFixed(1), cy: p.y.toFixed(1),
-                    r: 1.2, fill: 'rgba(139,92,246,0.18)'
-                }));
+            // ---- Foreground Dot Art: 1. Track boundary walls ----
+            for (let dist = 0; dist <= totalPathLen; dist += 8) {
+                const t = offsetToT(dist);
+                const cp = spiralPoint(t);
+                const na = tangentAngle(t) - Math.PI / 2;
+                
+                // Inner wall dot
+                const innerPt = {
+                    x: cp.x - TRACK_HW * Math.cos(na),
+                    y: cp.y - TRACK_HW * Math.sin(na)
+                };
+                addDot(dotGroups.fgSand, innerPt.x, innerPt.y);
+                
+                // Outer wall dot
+                const outerPt = {
+                    x: cp.x + TRACK_HW * Math.cos(na),
+                    y: cp.y + TRACK_HW * Math.sin(na)
+                };
+                addDot(dotGroups.fgSand, outerPt.x, outerPt.y);
             }
+
+            // ---- Foreground Dot Art: 2. Wiggling Golden Vein along the track center ----
+            for (let dist = 0; dist <= totalPathLen; dist += 5) {
+                const t = offsetToT(dist);
+                const cp = spiralPoint(t);
+                const ta = tangentAngle(t);
+                const na = ta - Math.PI / 2;
+                
+                // Smooth perpendicular oscillation plus random jitter to make it look organic
+                const wave = Math.sin(dist * 0.035) * 14;
+                const jitter = (Math.random() - 0.5) * 6;
+                const offset = wave + jitter;
+                
+                const vx = cp.x + offset * Math.cos(na);
+                const vy = cp.y + offset * Math.sin(na);
+                
+                if (Math.random() > 0.3) {
+                    addDot(dotGroups.fgGoldBright, vx, vy);
+                    addDot(dotGroups.fgGoldGlow, vx, vy);
+                } else {
+                    addDot(dotGroups.fgOrange, vx, vy);
+                }
+                
+                // Occasional minor branching vein that flows along the track
+                if (Math.random() < 0.06 && dist > 50 && dist < totalPathLen - 50) {
+                    const sideSign = Math.random() > 0.5 ? 1 : -1;
+                    const steps = 6 + Math.floor(Math.random() * 8);
+                    for (let s = 0; s < steps; s++) {
+                        const sDist = dist + s * 5;
+                        if (sDist > totalPathLen) break;
+                        const sT = offsetToT(sDist);
+                        const sCp = spiralPoint(sT);
+                        const sTa = tangentAngle(sT);
+                        const sNa = sTa - Math.PI / 2;
+                        
+                        const sOffset = offset + sideSign * s * 3.5;
+                        const clampedOffset = Math.max(-TRACK_HW + 12, Math.min(TRACK_HW - 12, sOffset));
+                        
+                        const sdx = sCp.x + clampedOffset * Math.cos(sNa);
+                        const sdy = sCp.y + clampedOffset * Math.sin(sNa);
+                        
+                        addDot(dotGroups.fgOrange, sdx, sdy);
+                        if (Math.random() > 0.6) {
+                            addDot(dotGroups.fgGoldDeep, sdx + (Math.random()-0.5)*3, sdy + (Math.random()-0.5)*3);
+                        }
+                    }
+                }
+            }
+
+            // ---- Foreground Dot Art: 3. Concentric Circle Motifs (Spirals/Rings) directly on the track ----
+            const numItems = n || 6;
+            const motifCenters = [
+                { x: CX, y: CY },
+                spiralPoint(0),
+                spiralPoint(1)
+            ];
+
+            const startOffset = 180;
+            const spacing = Math.min(480, (totalPathLen - 360) / Math.max(1, numItems - 1));
+
+            for (let i = 0; i < numItems - 1; i++) {
+                const midOffset = startOffset + spacing * (i + 0.5);
+                const midT = offsetToT(midOffset);
+                motifCenters.push(spiralPoint(midT));
+            }
+
+            motifCenters.forEach(center => {
+                const ringSpecs = [
+                    { r: 12, grp: dotGroups.fgGoldBright },
+                    { r: 24, grp: dotGroups.fgOrange },
+                    { r: 36, grp: dotGroups.fgSand },
+                    { r: 48, grp: dotGroups.fgCrimson },
+                    { r: 60, grp: dotGroups.fgGoldDeep }
+                ];
+                
+                ringSpecs.forEach(spec => {
+                    const numDots = Math.floor((2 * Math.PI * spec.r) / 7);
+                    for (let j = 0; j < numDots; j++) {
+                        const angle = (j / numDots) * 2 * Math.PI;
+                        const px = center.x + spec.r * Math.cos(angle);
+                        const py = center.y + spec.r * Math.sin(angle);
+                        addDot(spec.grp, px, py);
+                        if (spec.grp === dotGroups.fgGoldBright) {
+                            addDot(dotGroups.fgGoldGlow, px, py);
+                        }
+                    }
+                });
+            });
+
+            // Append foreground dots on top of the track fill
+            ['fgCrimson', 'fgOrange', 'fgSand', 'fgGoldDeep', 'fgGoldGlow', 'fgGoldBright'].forEach(key => {
+                const grp = dotGroups[key];
+                if (grp.pts.length === 0) return;
+                const pathD = grp.pts.map(p => `M${p.x},${p.y}h0.1`).join(' ');
+                
+                const attribs = {
+                    d: pathD,
+                    fill: 'none',
+                    stroke: grp.stroke,
+                    'stroke-width': grp.strokeWidth,
+                    'stroke-linecap': 'round',
+                    opacity: grp.opacity
+                };
+                sceneGroup.appendChild(sv('path', attribs));
+            });
         }
 
         // ================================================
@@ -544,7 +837,7 @@ Indeed, sample text is nice to have around when designing and prototyping new id
         function placeSection(t, title, body) {
             const p = spiralPoint(t);
             const deg = tangentAngle(t) * 180 / Math.PI;
-            const W = 235, H = 150;
+            const W = 250, H = 155;
 
             const fo = sv('foreignObject', {
                 x: -W / 2, y: -H / 2, width: W, height: H,
@@ -569,7 +862,7 @@ Indeed, sample text is nice to have around when designing and prototyping new id
             }
 
             fo.appendChild(wrapper);
-            svg.appendChild(fo);
+            sceneGroup.appendChild(fo);
         }
 
         // ---- IMAGE: card with rounded corners ----
@@ -590,11 +883,18 @@ Indeed, sample text is nice to have around when designing and prototyping new id
                 transform: `translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${deg.toFixed(2)})`
             });
 
+            // Card shadow (vector-based, no filter)
+            g.appendChild(sv('rect', {
+                x: -W / 2 + 2, y: -H / 2 + 3, width: W, height: H, rx: 14,
+                fill: 'rgba(0, 0, 0, 0.35)',
+                stroke: 'none'
+            }));
+
+            // Card background
             g.appendChild(sv('rect', {
                 x: -W / 2, y: -H / 2, width: W, height: H, rx: 14,
-                fill: 'rgba(15,12,41,0.75)',
-                stroke: 'rgba(139,92,246,0.35)', 'stroke-width': 1.5,
-                filter: 'url(#imgGlow)'
+                fill: 'rgba(22, 6, 6, 0.92)',
+                stroke: 'rgba(255, 179, 0, 0.45)', 'stroke-width': 1.5
             }));
 
             const img = sv('image', {
@@ -606,25 +906,37 @@ Indeed, sample text is nice to have around when designing and prototyping new id
             });
             g.appendChild(img);
 
-            // Corner brackets
-            const bL = 16, bO = 5;
-            [
-                { x: -W / 2 - bO, y: -H / 2 - bO, dx:  1, dy:  1 },
-                { x:  W / 2 + bO, y: -H / 2 - bO, dx: -1, dy:  1 },
-                { x: -W / 2 - bO, y:  H / 2 + bO, dx:  1, dy: -1 },
-                { x:  W / 2 + bO, y:  H / 2 + bO, dx: -1, dy: -1 }
-            ].forEach(c => {
-                g.appendChild(sv('path', {
-                    d: `M${c.x},${c.y + c.dy * bL} L${c.x},${c.y} L${c.x + c.dx * bL},${c.y}`,
-                    fill: 'none', stroke: 'rgba(139,92,246,0.30)',
-                    'stroke-width': 1.5, 'stroke-linecap': 'round'
-                }));
+            // Decorative Corner dot motifs — batched into paths instead of individual circles
+            const corners = [
+                { x: -W / 2 - 2, y: -H / 2 - 2 },
+                { x:  W / 2 + 2, y: -H / 2 - 2 },
+                { x: -W / 2 - 2, y:  H / 2 + 2 },
+                { x:  W / 2 + 2, y:  H / 2 + 2 }
+            ];
+            // Center dots (gold) — batched
+            let centerD = '';
+            let ringD = '';
+            corners.forEach(c => {
+                centerD += `M${c.x},${c.y}h0.1 `;
+                const r = 7;
+                for (let k = 0; k < 6; k++) {
+                    const a = (k / 6) * 2 * Math.PI;
+                    ringD += `M${(c.x + r * Math.cos(a)).toFixed(1)},${(c.y + r * Math.sin(a)).toFixed(1)}h0.1 `;
+                }
             });
+            g.appendChild(sv('path', {
+                d: centerD, fill: 'none', stroke: '#ffe680',
+                'stroke-width': 4.4, 'stroke-linecap': 'round'
+            }));
+            g.appendChild(sv('path', {
+                d: ringD, fill: 'none', stroke: '#ffb300',
+                'stroke-width': 3, 'stroke-linecap': 'round'
+            }));
 
-            svg.appendChild(g);
+            sceneGroup.appendChild(g);
         }
 
-        // ---- CURSOR-BAR DIVIDER ----
+        // ---- CURSOR-BAR DIVIDER (batched into paths) ----
         function placeDivider(t) {
             const len = TRACK_HW * 0.55;
             const p = spiralPoint(t);
@@ -635,71 +947,126 @@ Indeed, sample text is nice to have around when designing and prototyping new id
             const x2 = p.x + len * Math.cos(n);
             const y2 = p.y + len * Math.sin(n);
 
-            // Main cursor bar
-            svg.appendChild(sv('line', {
-                x1: x1.toFixed(1), y1: y1.toFixed(1),
-                x2: x2.toFixed(1), y2: y2.toFixed(1),
-                stroke: 'rgba(165, 170, 190, 0.32)',
-                'stroke-width': 2.5,
-                'stroke-linecap': 'round'
+            // Batch divider dots into two path strings (alternating colors)
+            let goldD = '';
+            let sandD = '';
+            const steps = Math.floor((len * 2) / 6);
+            for (let i = 0; i <= steps; i++) {
+                const frac = i / steps;
+                const dx = x1 + (x2 - x1) * frac;
+                const dy = y1 + (y2 - y1) * frac;
+                const distToCenter = Math.sqrt((dx - p.x)**2 + (dy - p.y)**2);
+                if (distToCenter < 12) continue;
+                const sub = `M${dx.toFixed(1)},${dy.toFixed(1)}h0.1 `;
+                if (i % 2 === 0) goldD += sub; else sandD += sub;
+            }
+            if (goldD) sceneGroup.appendChild(sv('path', {
+                d: goldD, fill: 'none', stroke: '#ffb300',
+                'stroke-width': 4.4, 'stroke-linecap': 'round'
+            }));
+            if (sandD) sceneGroup.appendChild(sv('path', {
+                d: sandD, fill: 'none', stroke: '#d9c3b0',
+                'stroke-width': 4.4, 'stroke-linecap': 'round'
             }));
 
-            // Small serifs at the ends (like the bracket edges in the wireframe)
-            const tang = tangentAngle(t);
-            const serifLen = 6;
-            [{ x: x1, y: y1 }, { x: x2, y: y2 }].forEach(ep => {
-                svg.appendChild(sv('line', {
-                    x1: (ep.x - serifLen * Math.cos(tang)).toFixed(1),
-                    y1: (ep.y - serifLen * Math.sin(tang)).toFixed(1),
-                    x2: (ep.x + serifLen * Math.cos(tang)).toFixed(1),
-                    y2: (ep.y + serifLen * Math.sin(tang)).toFixed(1),
-                    stroke: 'rgba(165, 170, 190, 0.22)',
-                    'stroke-width': 1.5,
-                    'stroke-linecap': 'round'
-                }));
-            });
+            // Center + ring + end caps — batched
+            let centerD = `M${p.x.toFixed(1)},${p.y.toFixed(1)}h0.1 `;
+            centerD += `M${x1.toFixed(1)},${y1.toFixed(1)}h0.1 `;
+            centerD += `M${x2.toFixed(1)},${y2.toFixed(1)}h0.1 `;
+            sceneGroup.appendChild(sv('path', {
+                d: centerD, fill: 'none', stroke: '#ffe680',
+                'stroke-width': 7, 'stroke-linecap': 'round'
+            }));
+
+            let ringD = '';
+            const ringR = 7;
+            for (let k = 0; k < 6; k++) {
+                const a = (k / 6) * 2 * Math.PI;
+                ringD += `M${(p.x + ringR * Math.cos(a)).toFixed(1)},${(p.y + ringR * Math.sin(a)).toFixed(1)}h0.1 `;
+            }
+            sceneGroup.appendChild(sv('path', {
+                d: ringD, fill: 'none', stroke: '#ff6600',
+                'stroke-width': 3.6, 'stroke-linecap': 'round'
+            }));
         }
 
         // ================================================
-        //  SCROLL-DRIVEN VIEWPORT
+        //  SCROLL-DRIVEN VIEWPORT (passive scroll listener, no rAF loop)
         // ================================================
         let minOffset = 180;
         let maxOffset = 180;
         let currentOffset = 180;
-        let lastNow = performance.now();
 
-        function animate(now) {
-            const dt = Math.min((now - lastNow) / 1000, 0.05);
-            lastNow = now;
+        // Cached DOM references (set once at init)
+        let $sceneWrapper, $scrollDriver, $progressBar, $scrollHint;
+        let scrollMax = 1;
 
-            const scrollY = window.scrollY;
-            const max = document.getElementById('scroll-driver').offsetHeight - window.innerHeight;
-            const scrollFrac = max > 0 ? Math.max(0, Math.min(1, scrollY / max)) : 0;
-
-            const targetOffset = minOffset + scrollFrac * (maxOffset - minOffset);
-            currentOffset += (targetOffset - currentOffset) * (1 - Math.exp(-8 * dt));
-
-            const currentT = offsetToT(currentOffset);
-            const p = spiralPoint(currentT);
-            const deg = tangentAngle(currentT) * 180 / Math.PI;
-
+        function applyTransform(offset) {
+            const t = offsetToT(offset);
+            const p = spiralPoint(t);
+            const deg = tangentAngle(t) * 180 / Math.PI;
             const vw = window.innerWidth;
             const vh = window.innerHeight;
             const scale = Math.min(vw, vh) / 700;
 
-            document.getElementById('scene-wrapper').style.transform =
+            $sceneWrapper.style.transform =
                 `translate(${vw / 2}px,${vh / 2}px) ` +
                 `scale(${scale.toFixed(4)}) ` +
                 `rotate(${(-deg).toFixed(3)}deg) ` +
                 `translate(${(-p.x).toFixed(1)}px,${(-p.y).toFixed(1)}px)`;
+        }
 
-            document.getElementById('progressBar').style.width =
-                (scrollFrac * 100).toFixed(1) + '%';
+        // Smooth interpolation state
+        let animating = false;
+        let lastScrollFrac = 0;
 
-            document.getElementById('scrollHint').style.opacity =
-                Math.max(0, 1 - scrollFrac * 12).toFixed(2);
+        function onScroll() {
+            const scrollFrac = scrollMax > 0 ? Math.max(0, Math.min(1, window.scrollY / scrollMax)) : 0;
+            lastScrollFrac = scrollFrac;
 
-            requestAnimationFrame(animate);
+            $progressBar.style.width = (scrollFrac * 100).toFixed(1) + '%';
+            $scrollHint.style.opacity = Math.max(0, 1 - scrollFrac * 12).toFixed(2);
+
+            if (!animating) {
+                animating = true;
+                requestAnimationFrame(smoothStep);
+            }
+        }
+
+        function smoothStep() {
+            const targetOffset = minOffset + lastScrollFrac * (maxOffset - minOffset);
+            const diff = targetOffset - currentOffset;
+
+            // If close enough, snap and stop
+            if (Math.abs(diff) < 0.1) {
+                currentOffset = targetOffset;
+                applyTransform(currentOffset);
+                animating = false;
+                return;
+            }
+
+            // Exponential ease toward target
+            currentOffset += diff * 0.18;
+            applyTransform(currentOffset);
+            requestAnimationFrame(smoothStep);
+        }
+
+        // ================================================
+        //  BROWSER OPTIMIZATION CHECK
+        // ================================================
+        function checkBrowser() {
+            const ua = navigator.userAgent;
+            const isSafari = /Safari/i.test(ua) && !/Chrome/i.test(ua);
+            const isFirefox = /Firefox/i.test(ua);
+            if (isSafari || isFirefox) {
+                const popup = document.getElementById('browserPopup');
+                if (popup) popup.classList.add('show');
+            }
+        }
+
+        window.closePopup = function() {
+            const popup = document.getElementById('browserPopup');
+            if (popup) popup.classList.remove('show');
         }
 
         // ================================================
@@ -708,14 +1075,12 @@ Indeed, sample text is nice to have around when designing and prototyping new id
         loadContent().then(items => {
             const n = items.length;
             if (n > 0) {
-                // Space items by 480px, starting offset 180, ending offset 180
                 const requiredLen = 180 + 480 * Math.max(0, n - 1) + 180;
                 REVOLUTIONS = solveRevolutions(requiredLen);
             } else {
                 REVOLUTIONS = 0.5;
             }
 
-            // Dynamically resize track boundaries to fit the solved spiral size
             const max_rx = INNER_RX + REVOLUTIONS * LOOP_SPACING_X;
             const max_ry = INNER_RY + REVOLUTIONS * LOOP_SPACING_Y;
             const width = Math.ceil((max_rx + TRACK_HW + 150) * 2);
@@ -727,21 +1092,51 @@ Indeed, sample text is nice to have around when designing and prototyping new id
             scene.setAttribute('width', width);
             scene.setAttribute('height', height);
 
-            // Compute spiral geometry coordinates with solved parameters
             initializeGeometry();
 
-            // Set up viewport limits around content offsets
             minOffset = 180;
             const spacing = Math.min(480, (totalPathLen - 360) / Math.max(1, n - 1));
             maxOffset = minOffset + spacing * (n - 1);
-            currentOffset = minOffset;
 
-            // Set scrollable page height matching path length for consistent scroll speed
-            document.getElementById('scroll-driver').style.height = `${Math.ceil(totalPathLen * 1.55)}px`;
+            // Cache DOM references once
+            $sceneWrapper = document.getElementById('scene-wrapper');
+            $scrollDriver = document.getElementById('scroll-driver');
+            $progressBar = document.getElementById('progressBar');
+            $scrollHint = document.getElementById('scrollHint');
 
-            buildTrack();
+            $scrollDriver.style.height = `${Math.ceil(totalPathLen * 1.55)}px`;
+            scrollMax = $scrollDriver.offsetHeight - window.innerHeight;
+
+            // Build SVG offline, insert as one write
+            sceneGroup = sv('g', { id: 'scene-contents' });
+            buildTrack(n);
             placeContent(items);
-            requestAnimationFrame(animate);
+            svg.appendChild(sceneGroup);
+
+            // Compute initial position and render immediately
+            const scrollFrac = scrollMax > 0 ? Math.max(0, Math.min(1, window.scrollY / scrollMax)) : 0;
+            currentOffset = minOffset + scrollFrac * (maxOffset - minOffset);
+            lastScrollFrac = scrollFrac;
+            applyTransform(currentOffset);
+            $progressBar.style.width = (scrollFrac * 100).toFixed(1) + '%';
+            $scrollHint.style.opacity = Math.max(0, 1 - scrollFrac * 12).toFixed(2);
+
+            // Attach passive scroll listener (replaces rAF loop)
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', () => {
+                scrollMax = $scrollDriver.offsetHeight - window.innerHeight;
+                onScroll();
+            });
+
+            // Hide loader after a short paint delay
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    const loader = document.getElementById('loader');
+                    if (loader) loader.classList.add('hide');
+                });
+            });
+
+            checkBrowser();
         });
     })();
     </script>
