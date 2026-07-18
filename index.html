@@ -132,9 +132,6 @@
             color: #e5ccb3;
             text-align: left;
             overflow: hidden;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 6;
         }
 
         /* ---- Browser Warning Popup ---- */
@@ -833,7 +830,7 @@ Indeed, sample text is nice to have around when designing and prototyping new id
             }
         }
 
-        // ---- SECTION: title + body in one block ----
+        // ---- SECTION: simple single box ----
         function placeSection(t, title, body) {
             const p = spiralPoint(t);
             const deg = tangentAngle(t) * 180 / Math.PI;
@@ -1072,7 +1069,39 @@ Indeed, sample text is nice to have around when designing and prototyping new id
         // ================================================
         //  INIT (Dynamic track scaling based on content)
         // ================================================
-        loadContent().then(items => {
+        loadContent().then(rawItems => {
+            // Pre-expand long sections at sentence boundaries
+            const CHARS_PER_BOX = 180;
+            const items = [];
+            rawItems.forEach(item => {
+                if (item.type !== 'section' || !item.body || item.body.length <= CHARS_PER_BOX) {
+                    items.push(item);
+                    return;
+                }
+                let remaining = item.body;
+                let first = true;
+                while (remaining.length > 0) {
+                    if (remaining.length <= CHARS_PER_BOX) {
+                        items.push({ type: 'section', title: first ? item.title : null, body: remaining });
+                        break;
+                    }
+                    let cut = -1;
+                    for (let j = Math.min(remaining.length - 1, CHARS_PER_BOX); j > 30; j--) {
+                        if (remaining[j] === '.' || remaining[j] === '!' || remaining[j] === '?') {
+                            cut = j + 1;
+                            break;
+                        }
+                    }
+                    if (cut <= 0) {
+                        cut = remaining.lastIndexOf(' ', CHARS_PER_BOX);
+                        if (cut <= 0) cut = CHARS_PER_BOX;
+                    }
+                    items.push({ type: 'section', title: first ? item.title : null, body: remaining.slice(0, cut).trim() });
+                    remaining = remaining.slice(cut).trimStart();
+                    first = false;
+                }
+            });
+
             const n = items.length;
             if (n > 0) {
                 const requiredLen = 180 + 480 * Math.max(0, n - 1) + 180;
