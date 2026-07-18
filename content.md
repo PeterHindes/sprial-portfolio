@@ -1,6 +1,14 @@
-# The Journey Begins
+![An Aborigonal Painting](images/paintings.jpg)
 
-Every great story starts from within, growing outward like a spiral through time and space. What begins as a quiet thought becomes a current pulling you forward into the unknown.
+# The Team:
+Peter Hindes
+
+# The Question:
+Are there distinct cultural tropes in Aborigonal and Maori storytelling, and if so what are they?
+
+I decided to pursue this question because I am an avid fan of horror movies which have a bit of a reputation for using tropes often as an in joke but also to create new expirences by subverting them. I was curious to see if there were any distinct cultural tropes in Aborigonal and Maori storytelling that we dont see in our horror movies. That is why I decided to focus mainly on horror movies with a looser focus on stories in general.
+
+
 
 # A Good Idea To Have
 
