@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiral Timeline</title>
+    <meta name="description" content="An interactive spiral timeline that moves the viewport along a curved track as you scroll.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            background: #06060f;
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        #scroll-driver {
+            height: 9000px;
+            position: relative;
+        }
+
+        #viewport-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        #scene-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            will-change: transform;
+            transform-origin: 0 0;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #c084fc);
+            z-index: 200;
+            box-shadow: 0 0 14px rgba(139, 92, 246, 0.5);
+        }
+
+        .scroll-hint {
+            position: fixed;
+            bottom: 36px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(226, 232, 240, 0.45);
+            font-size: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        .scroll-hint .arrow {
+            display: block;
+            text-align: center;
+            font-size: 18px;
+            margin-top: 6px;
+            animation: bobArrow 2s ease-in-out infinite;
+        }
+
+        @keyframes bobArrow {
+            0%, 100% { transform: translateY(0); opacity: 0.4; }
+            50% { transform: translateY(6px); opacity: 0.9; }
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            background: radial-gradient(
+                ellipse 70% 65% at 50% 50%,
+                transparent 0%,
+                rgba(6, 6, 15, 0.30) 70%,
+                rgba(6, 6, 15, 0.80) 100%
+            );
+        }
+
+        /* ---- foreignObject section styling ---- */
+        .fo-section {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .fo-section-title {
+            font: 700 16px/1.25 'Space Grotesk', sans-serif;
+            color: #e2e8f0;
+            margin-bottom: 5px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+        .fo-section-body {
+            font: 400 11px/1.55 'Inter', sans-serif;
+            color: rgba(226, 232, 240, 0.78);
+            text-align: left;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 6;
+        }
+    </style>
+</head>
+<body>
+    <div id="scroll-driver"></div>
+
+    <div id="viewport-container">
+        <div id="scene-wrapper">
+            <svg id="scene" xmlns="http://www.w3.org/2000/svg"
+                 xmlns:xlink="http://www.w3.org/1999/xlink"
+                 width="3400" height="2800"></svg>
+        </div>
+    </div>
+
+    <div class="vignette"></div>
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="scroll-hint" id="scrollHint">
+        Scroll to explore the timeline
+        <span class="arrow">↓</span>
+    </div>
+
+    <script>
+    (function () {
+        'use strict';
+        // ================================================
+        //  SPIRAL CONFIGURATION & GEOMETRY
+        // ================================================
+        let CX = 1700, CY = 1400;
+        const INNER_RX = 260, INNER_RY = 190;
+        const LOOP_SPACING_X = 520;
+        const LOOP_SPACING_Y = LOOP_SPACING_X * (INNER_RY / INNER_RX);
+        let REVOLUTIONS = 1.5;
+        let TOTAL_ANGLE = REVOLUTIONS * 2 * Math.PI;
+        const START_ANGLE = Math.PI;
+        const TRACK_HW = 140;
+        const SAMPLES = 500;
+
+        // ================================================
+        //  SPIRAL MATH
+        // ================================================
+        function spiralPoint(t) {
+            const a = START_ANGLE + t * TOTAL_ANGLE;
+            const rx = INNER_RX + t * REVOLUTIONS * LOOP_SPACING_X;
+            const ry = INNER_RY + t * REVOLUTIONS * LOOP_SPACING_Y;
+            return { x: CX + rx * Math.cos(a), y: CY + ry * Math.sin(a) };
+        }
+
+        function tangentAngle(t) {
+            const e = 0.00004;
+            const a = spiralPoint(Math.max(0, t - e));
+            const b = spiralPoint(Math.min(1, t + e));
+            return Math.atan2(b.y - a.y, b.x - a.x);
+        }
+
+        function offsetPt(t, d) {
+            const p = spiralPoint(t);
+            const n = tangentAngle(t) - Math.PI / 2;
+            return { x: p.x + d * Math.cos(n), y: p.y + d * Math.sin(n) };
+        }
+
+        // ================================================
+        //  DYNAMIC GEOMETRY COMPUTATION & SOLVER
+        // ================================================
+        const cPts = [], iPts = [], oPts = [], cumLen = [0];
+        let totalPathLen = 0;
+
+        function initializeGeometry() {
+            cPts.length = 0;
+            iPts.length = 0;
+            oPts.length = 0;
+            cumLen.length = 0;
+            cumLen.push(0);
+
+            TOTAL_ANGLE = REVOLUTIONS * 2 * Math.PI;
+
+            for (let i = 0; i <= SAMPLES; i++) {
+                const t = i / SAMPLES;
+                const cp = spiralPoint(t);
+                cPts.push(cp);
+                iPts.push(offsetPt(t, -TRACK_HW));
+                oPts.push(offsetPt(t,  TRACK_HW));
+                if (i > 0) {
+                    const dx = cp.x - cPts[i - 1].x;
+                    const dy = cp.y - cPts[i - 1].y;
+                    cumLen.push(cumLen[i - 1] + Math.sqrt(dx * dx + dy * dy));
+                }
+            }
+            totalPathLen = cumLen[cumLen.length - 1];
+        }
+
+        function getPathLengthForRevolutions(revs) {
+            const totalAngle = revs * 2 * Math.PI;
+            let len = 0;
+            let lastPt = null;
+            const tempSamples = 200;
+            for (let i = 0; i <= tempSamples; i++) {
+                const t = i / tempSamples;
+                const angle = START_ANGLE + t * totalAngle;
+                const rx = INNER_RX + t * revs * LOOP_SPACING_X;
+                const ry = INNER_RY + t * revs * LOOP_SPACING_Y;
+                const pt = {
+                    x: rx * Math.cos(angle),
+                    y: ry * Math.sin(angle)
+                };
+                if (i > 0) {
+                    const dx = pt.x - lastPt.x;
+                    const dy = pt.y - lastPt.y;
+                    len += Math.sqrt(dx*dx + dy*dy);
+                }
+                lastPt = pt;
+            }
+            return len;
+        }
+
+        function solveRevolutions(targetLen) {
+            let low = 0.2, high = 6.0;
+            for (let iter = 0; iter < 12; iter++) {
+                const mid = (low + high) / 2;
+                if (getPathLengthForRevolutions(mid) < targetLen) {
+                    low = mid;
+                } else {
+                    high = mid;
+                }
+            }
+            return high;
+        }
+
+        function offsetToT(offset) {
+            if (offset <= 0) return 0;
+            if (offset >= totalPathLen) return 1;
+            let low = 0, high = SAMPLES;
+            while (low < high - 1) {
+                const mid = (low + high) >> 1;
+                if (cumLen[mid] < offset) {
+                    low = mid;
+                } else {
+                    high = mid;
+                }
+            }
+            const len0 = cumLen[low];
+            const len1 = cumLen[high];
+            const frac = (offset - len0) / (len1 - len0);
+            return (low + frac) / SAMPLES;
+        }
+
+        // ================================================
+        //  SVG HELPERS
+        // ================================================
+        const NS = 'http://www.w3.org/2000/svg';
+
+        function sv(tag, a) {
+            const e = document.createElementNS(NS, tag);
+            if (a) Object.entries(a).forEach(([k, v]) => e.setAttribute(k, String(v)));
+            return e;
+        }
+
+        function pD(pts) {
+            return pts.map((p, i) =>
+                (i ? 'L' : 'M') + p.x.toFixed(1) + ',' + p.y.toFixed(1)
+            ).join(' ');
+        }
+
+        // ================================================
+        //  MARKDOWN PARSER
+        //  Handles: # Title, plain body paragraphs, ![alt](src)
+        // ================================================
+        const DEFAULT_MD = `# The Journey Begins
+Every great story starts from within, growing outward like a spiral through time and space.
+# A Good Idea To Have
+Sample text is a good idea to have when building layouts and visualizing the flow of a design.
+# How It Works
+See how it will work in this instance. Text flows along the curved path of the timeline.
+# Cool Results! Wow!
+The spiral creates a unique browsing experience that draws readers deeper into the content.
+# Nice To Have Around
+Indeed, sample text is nice to have around when designing and prototyping new ideas.`;
+
+        function parseMD(text) {
+            // Phase 1: collect raw items
+            const raw = [];
+            let bodyBuf = [];
+
+            function flushBody() {
+                if (bodyBuf.length) {
+                    raw.push({ type: 'body', text: bodyBuf.join(' ') });
+                    bodyBuf = [];
+                }
+            }
+
+            for (const line of text.split('\n')) {
+                const ln = line.trim();
+                if (!ln) { flushBody(); continue; }
+
+                if (ln.startsWith('# ')) {
+                    flushBody();
+                    raw.push({ type: 'title', text: ln.slice(2) });
+                } else {
+                    const m = ln.match(/^!\[([^\]]*)\]\(([^)]+)\)/);
+                    if (m) {
+                        flushBody();
+                        raw.push({ type: 'image', alt: m[1], src: m[2] });
+                    } else {
+                        bodyBuf.push(ln);
+                    }
+                }
+            }
+            flushBody();
+
+            // Phase 2: group title + following body into sections
+            const items = [];
+            for (let i = 0; i < raw.length; i++) {
+                if (raw[i].type === 'title') {
+                    const title = raw[i].text;
+                    let body = '';
+                    if (i + 1 < raw.length && raw[i + 1].type === 'body') {
+                        body = raw[i + 1].text;
+                        i++;  // consume the body
+                    }
+                    items.push({ type: 'section', title, body });
+                } else if (raw[i].type === 'image') {
+                    items.push(raw[i]);
+                } else if (raw[i].type === 'body') {
+                    // Orphan body (no title before it)
+                    items.push({ type: 'section', title: '', body: raw[i].text });
+                }
+            }
+            return items;
+        }
+
+        async function loadContent() {
+            try {
+                const r = await fetch('content.md');
+                if (!r.ok) throw new Error(r.status);
+                return parseMD(await r.text());
+            } catch (e) {
+                console.warn('content.md unavailable, using defaults:', e.message);
+                return parseMD(DEFAULT_MD);
+            }
+        }
+
+        // ================================================
+        //  BUILD SPIRAL TRACK  (visual backdrop)
+        // ================================================
+        let svg, defs;
+
+        function buildTrackOutlineD() {
+            const R = 12; // corner radius
+            
+            // Tangent at start (t=0)
+            const dx0 = cPts[1].x - cPts[0].x;
+            const dy0 = cPts[1].y - cPts[0].y;
+            const len0 = Math.sqrt(dx0*dx0 + dy0*dy0);
+            const T0 = { x: dx0/len0, y: dy0/len0 };
+            const U_out0 = { x: -T0.x, y: -T0.y };
+            
+            const dx_cap0 = oPts[0].x - iPts[0].x;
+            const dy_cap0 = oPts[0].y - iPts[0].y;
+            const len_cap0 = Math.sqrt(dx_cap0*dx_cap0 + dy_cap0*dy_cap0);
+            const U_cap0 = { x: dx_cap0/len_cap0, y: dy_cap0/len_cap0 };
+            
+            const c1 = { x: iPts[0].x + R * U_out0.x, y: iPts[0].y + R * U_out0.y };
+            const c2 = { x: oPts[0].x + R * U_out0.x, y: oPts[0].y + R * U_out0.y };
+            
+            let d = `M ${iPts[0].x.toFixed(1)},${iPts[0].y.toFixed(1)} `;
+            d += `Q ${c1.x.toFixed(1)},${c1.y.toFixed(1)} ${(c1.x + R*U_cap0.x).toFixed(1)},${(c1.y + R*U_cap0.y).toFixed(1)} `;
+            d += `L ${(c2.x - R*U_cap0.x).toFixed(1)},${(c2.y - R*U_cap0.y).toFixed(1)} `;
+            d += `Q ${c2.x.toFixed(1)},${c2.y.toFixed(1)} ${oPts[0].x.toFixed(1)},${oPts[0].y.toFixed(1)} `;
+            
+            // Outer wall
+            for (let i = 1; i <= SAMPLES; i++) {
+                d += `L ${oPts[i].x.toFixed(1)},${oPts[i].y.toFixed(1)} `;
+            }
+            
+            // Tangent at end (t=1)
+            const dx1 = cPts[SAMPLES].x - cPts[SAMPLES-1].x;
+            const dy1 = cPts[SAMPLES].y - cPts[SAMPLES-1].y;
+            const len1 = Math.sqrt(dx1*dx1 + dy1*dy1);
+            const T1 = { x: dx1/len1, y: dy1/len1 };
+            const U_out1 = T1;
+            
+            const dx_cap1 = iPts[SAMPLES].x - oPts[SAMPLES].x;
+            const dy_cap1 = iPts[SAMPLES].y - oPts[SAMPLES].y;
+            const len_cap1 = Math.sqrt(dx_cap1*dx_cap1 + dy_cap1*dy_cap1);
+            const U_cap1 = { x: dx_cap1/len_cap1, y: dy_cap1/len_cap1 };
+            
+            const c3 = { x: oPts[SAMPLES].x + R * U_out1.x, y: oPts[SAMPLES].y + R * U_out1.y };
+            const c4 = { x: iPts[SAMPLES].x + R * U_out1.x, y: iPts[SAMPLES].y + R * U_out1.y };
+            
+            d += `Q ${c3.x.toFixed(1)},${c3.y.toFixed(1)} ${(c3.x + R*U_cap1.x).toFixed(1)},${(c3.y + R*U_cap1.y).toFixed(1)} `;
+            d += `L ${(c4.x - R*U_cap1.x).toFixed(1)},${(c4.y - R*U_cap1.y).toFixed(1)} `;
+            d += `Q ${c4.x.toFixed(1)},${c4.y.toFixed(1)} ${iPts[SAMPLES].x.toFixed(1)},${iPts[SAMPLES].y.toFixed(1)} `;
+            
+            // Inner wall in reverse
+            for (let i = SAMPLES - 1; i >= 0; i--) {
+                d += `L ${iPts[i].x.toFixed(1)},${iPts[i].y.toFixed(1)} `;
+            }
+            
+            d += 'Z';
+            return d;
+        }
+
+        function buildTrack() {
+            svg = document.getElementById('scene');
+
+            defs = sv('defs');
+            defs.innerHTML = `
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="3" result="b"/>
+                    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="imgGlow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="8" in="SourceAlpha" result="s"/>
+                    <feOffset dy="4" result="o"/>
+                    <feFlood flood-color="rgba(99,102,241,0.3)" result="c"/>
+                    <feComposite in="c" in2="o" operator="in" result="cs"/>
+                    <feMerge><feMergeNode in="cs"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <radialGradient id="ng1" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="rgba(99,102,241,0.12)"/>
+                    <stop offset="100%" stop-color="rgba(99,102,241,0)"/>
+                </radialGradient>
+                <radialGradient id="ng2" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="rgba(168,85,247,0.09)"/>
+                    <stop offset="100%" stop-color="rgba(168,85,247,0)"/>
+                </radialGradient>
+                <radialGradient id="ng3" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="rgba(34,211,238,0.06)"/>
+                    <stop offset="100%" stop-color="rgba(34,211,238,0)"/>
+                </radialGradient>
+            `;
+            svg.appendChild(defs);
+
+            // ---- Stars ----
+            const sg = sv('g', { opacity: 0.55 });
+            for (let i = 0; i < 200; i++) {
+                sg.appendChild(sv('circle', {
+                    cx: (Math.random() * 3400).toFixed(0),
+                    cy: (Math.random() * 2800).toFixed(0),
+                    r:  (Math.random() * 1.3 + 0.3).toFixed(2),
+                    fill: '#fff',
+                    opacity: (Math.random() * 0.5 + 0.08).toFixed(2)
+                }));
+            }
+            svg.appendChild(sg);
+
+            // ---- Nebula ----
+            svg.appendChild(sv('circle', { cx: 800, cy: 700, r: 520, fill: 'url(#ng1)' }));
+            svg.appendChild(sv('circle', { cx: 2400, cy: 1800, r: 480, fill: 'url(#ng2)' }));
+            svg.appendChild(sv('circle', { cx: 1700, cy: 450, r: 400, fill: 'url(#ng3)' }));
+
+            const trackOutlineD = buildTrackOutlineD();
+
+            // ---- Track fill ----
+            svg.appendChild(sv('path', {
+                d: trackOutlineD,
+                fill: 'rgba(99,102,241,0.04)',
+                stroke: 'none'
+            }));
+
+            // ---- Center dashes ----
+            svg.appendChild(sv('path', {
+                d: pD(cPts), fill: 'none',
+                stroke: 'rgba(139,92,246,0.06)',
+                'stroke-width': 1, 'stroke-dasharray': '10,20'
+            }));
+
+            // ---- Walls & Caps (Unified outline) ----
+            svg.appendChild(sv('path', {
+                d: trackOutlineD,
+                fill: 'none',
+                stroke: 'rgba(139,92,246,0.38)',
+                'stroke-width': 1.5,
+                filter: 'url(#glow)'
+            }));
+
+            // ---- Guide dots ----
+            for (let i = 0; i <= 80; i++) {
+                const p = spiralPoint(i / 80);
+                svg.appendChild(sv('circle', {
+                    cx: p.x.toFixed(1), cy: p.y.toFixed(1),
+                    r: 1.2, fill: 'rgba(139,92,246,0.18)'
+                }));
+            }
+        }
+
+        // ================================================
+        //  PLACE CONTENT & DIVIDERS (Physical arc-length spacing)
+        // ================================================
+        function placeContent(items) {
+            const n = items.length;
+            if (!n) return;
+
+            const startOffset = 180;
+            const spacing = Math.min(480, (totalPathLen - 360) / Math.max(1, n - 1));
+            const positions = [];
+
+            items.forEach((item, i) => {
+                const offset = startOffset + spacing * i;
+                const t = offsetToT(offset);
+                positions.push(t);
+
+                if (item.type === 'section') placeSection(t, item.title, item.body);
+                else if (item.type === 'image') placeImage(t, item.src, item.alt, i);
+            });
+
+            // Dividers between content blocks
+            for (let i = 0; i < positions.length - 1; i++) {
+                const midT = offsetToT(startOffset + spacing * (i + 0.5));
+                placeDivider(midT);
+            }
+        }
+
+        // ---- SECTION: title + body in one block ----
+        function placeSection(t, title, body) {
+            const p = spiralPoint(t);
+            const deg = tangentAngle(t) * 180 / Math.PI;
+            const W = 235, H = 150;
+
+            const fo = sv('foreignObject', {
+                x: -W / 2, y: -H / 2, width: W, height: H,
+                transform: `translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${deg.toFixed(2)})`
+            });
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'fo-section';
+
+            if (title) {
+                const titleEl = document.createElement('div');
+                titleEl.className = 'fo-section-title';
+                titleEl.textContent = title;
+                wrapper.appendChild(titleEl);
+            }
+
+            if (body) {
+                const bodyEl = document.createElement('div');
+                bodyEl.className = 'fo-section-body';
+                bodyEl.textContent = body;
+                wrapper.appendChild(bodyEl);
+            }
+
+            fo.appendChild(wrapper);
+            svg.appendChild(fo);
+        }
+
+        // ---- IMAGE: card with rounded corners ----
+        function placeImage(t, src, alt, idx) {
+            const p = spiralPoint(t);
+            const deg = tangentAngle(t) * 180 / Math.PI;
+            const W = 240, H = 170, P = 10, R = 10;
+
+            const clipId = 'ic' + idx;
+            const clip = sv('clipPath', { id: clipId });
+            clip.appendChild(sv('rect', {
+                x: -(W / 2 - P), y: -(H / 2 - P),
+                width: W - P * 2, height: H - P * 2, rx: R
+            }));
+            defs.appendChild(clip);
+
+            const g = sv('g', {
+                transform: `translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${deg.toFixed(2)})`
+            });
+
+            g.appendChild(sv('rect', {
+                x: -W / 2, y: -H / 2, width: W, height: H, rx: 14,
+                fill: 'rgba(15,12,41,0.75)',
+                stroke: 'rgba(139,92,246,0.35)', 'stroke-width': 1.5,
+                filter: 'url(#imgGlow)'
+            }));
+
+            const img = sv('image', {
+                x: -(W / 2 - P), y: -(H / 2 - P),
+                width: W - P * 2, height: H - P * 2,
+                preserveAspectRatio: 'xMidYMid slice',
+                'clip-path': `url(#${clipId})`,
+                href: src
+            });
+            g.appendChild(img);
+
+            // Corner brackets
+            const bL = 16, bO = 5;
+            [
+                { x: -W / 2 - bO, y: -H / 2 - bO, dx:  1, dy:  1 },
+                { x:  W / 2 + bO, y: -H / 2 - bO, dx: -1, dy:  1 },
+                { x: -W / 2 - bO, y:  H / 2 + bO, dx:  1, dy: -1 },
+                { x:  W / 2 + bO, y:  H / 2 + bO, dx: -1, dy: -1 }
+            ].forEach(c => {
+                g.appendChild(sv('path', {
+                    d: `M${c.x},${c.y + c.dy * bL} L${c.x},${c.y} L${c.x + c.dx * bL},${c.y}`,
+                    fill: 'none', stroke: 'rgba(139,92,246,0.30)',
+                    'stroke-width': 1.5, 'stroke-linecap': 'round'
+                }));
+            });
+
+            svg.appendChild(g);
+        }
+
+        // ---- CURSOR-BAR DIVIDER ----
+        function placeDivider(t) {
+            const len = TRACK_HW * 0.55;
+            const p = spiralPoint(t);
+            const n = tangentAngle(t) - Math.PI / 2;
+
+            const x1 = p.x - len * Math.cos(n);
+            const y1 = p.y - len * Math.sin(n);
+            const x2 = p.x + len * Math.cos(n);
+            const y2 = p.y + len * Math.sin(n);
+
+            // Main cursor bar
+            svg.appendChild(sv('line', {
+                x1: x1.toFixed(1), y1: y1.toFixed(1),
+                x2: x2.toFixed(1), y2: y2.toFixed(1),
+                stroke: 'rgba(165, 170, 190, 0.32)',
+                'stroke-width': 2.5,
+                'stroke-linecap': 'round'
+            }));
+
+            // Small serifs at the ends (like the bracket edges in the wireframe)
+            const tang = tangentAngle(t);
+            const serifLen = 6;
+            [{ x: x1, y: y1 }, { x: x2, y: y2 }].forEach(ep => {
+                svg.appendChild(sv('line', {
+                    x1: (ep.x - serifLen * Math.cos(tang)).toFixed(1),
+                    y1: (ep.y - serifLen * Math.sin(tang)).toFixed(1),
+                    x2: (ep.x + serifLen * Math.cos(tang)).toFixed(1),
+                    y2: (ep.y + serifLen * Math.sin(tang)).toFixed(1),
+                    stroke: 'rgba(165, 170, 190, 0.22)',
+                    'stroke-width': 1.5,
+                    'stroke-linecap': 'round'
+                }));
+            });
+        }
+
+        // ================================================
+        //  SCROLL-DRIVEN VIEWPORT
+        // ================================================
+        let minOffset = 180;
+        let maxOffset = 180;
+        let currentOffset = 180;
+        let lastNow = performance.now();
+
+        function animate(now) {
+            const dt = Math.min((now - lastNow) / 1000, 0.05);
+            lastNow = now;
+
+            const scrollY = window.scrollY;
+            const max = document.getElementById('scroll-driver').offsetHeight - window.innerHeight;
+            const scrollFrac = max > 0 ? Math.max(0, Math.min(1, scrollY / max)) : 0;
+
+            const targetOffset = minOffset + scrollFrac * (maxOffset - minOffset);
+            currentOffset += (targetOffset - currentOffset) * (1 - Math.exp(-8 * dt));
+
+            const currentT = offsetToT(currentOffset);
+            const p = spiralPoint(currentT);
+            const deg = tangentAngle(currentT) * 180 / Math.PI;
+
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const scale = Math.min(vw, vh) / 700;
+
+            document.getElementById('scene-wrapper').style.transform =
+                `translate(${vw / 2}px,${vh / 2}px) ` +
+                `scale(${scale.toFixed(4)}) ` +
+                `rotate(${(-deg).toFixed(3)}deg) ` +
+                `translate(${(-p.x).toFixed(1)}px,${(-p.y).toFixed(1)}px)`;
+
+            document.getElementById('progressBar').style.width =
+                (scrollFrac * 100).toFixed(1) + '%';
+
+            document.getElementById('scrollHint').style.opacity =
+                Math.max(0, 1 - scrollFrac * 12).toFixed(2);
+
+            requestAnimationFrame(animate);
+        }
+
+        // ================================================
+        //  INIT (Dynamic track scaling based on content)
+        // ================================================
+        loadContent().then(items => {
+            const n = items.length;
+            if (n > 0) {
+                // Space items by 480px, starting offset 180, ending offset 180
+                const requiredLen = 180 + 480 * Math.max(0, n - 1) + 180;
+                REVOLUTIONS = solveRevolutions(requiredLen);
+            } else {
+                REVOLUTIONS = 0.5;
+            }
+
+            // Dynamically resize track boundaries to fit the solved spiral size
+            const max_rx = INNER_RX + REVOLUTIONS * LOOP_SPACING_X;
+            const max_ry = INNER_RY + REVOLUTIONS * LOOP_SPACING_Y;
+            const width = Math.ceil((max_rx + TRACK_HW + 150) * 2);
+            const height = Math.ceil((max_ry + TRACK_HW + 150) * 2);
+            CX = width / 2;
+            CY = height / 2;
+
+            const scene = document.getElementById('scene');
+            scene.setAttribute('width', width);
+            scene.setAttribute('height', height);
+
+            // Compute spiral geometry coordinates with solved parameters
+            initializeGeometry();
+
+            // Set up viewport limits around content offsets
+            minOffset = 180;
+            const spacing = Math.min(480, (totalPathLen - 360) / Math.max(1, n - 1));
+            maxOffset = minOffset + spacing * (n - 1);
+            currentOffset = minOffset;
+
+            // Set scrollable page height matching path length for consistent scroll speed
+            document.getElementById('scroll-driver').style.height = `${Math.ceil(totalPathLen * 1.55)}px`;
+
+            buildTrack();
+            placeContent(items);
+            requestAnimationFrame(animate);
+        });
+    })();
+    </script>
+</body>
+</html>
