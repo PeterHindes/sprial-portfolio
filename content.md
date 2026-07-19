@@ -33,3 +33,8 @@ UAGL was closley followed by the State Library of New South Wales in Sydney Aust
 
 ![A portrait in the State Library of New South Wales. It shows a political stunt that was importatnt to recognizing Aboriginal political enfranchisement](images/a-portrait-in-the-SLNSW-art-gallery.jpg)
 
+I also visited the Auckland Centeral City Library, it had a nice community vibe to it with lots of community services offered. I saw posters promoting community events, and a display showing some Maori art and a section on Maori writers, the top floor had the booring books in a reserach area with an attendant.
+
+Overall I think New Zealand had more awareness of their indigionus people than Austrailia, but boths were leagues ahead of the US if it was a competition. The difference can likley be explained by the fact that there are more indigonus people living in New Zealand as a perceentage of the poppulation than in Austrailia.
+
+# Timeline:
