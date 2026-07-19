@@ -40,11 +40,18 @@ Overall I think New Zealand had more awareness of their indigenous people than A
 # Timeline:
 
 # Sketches:
-![IMG_2256](images/IMG_2256.jpeg)
-![IMG_2257](images/IMG_2257.jpeg)
-![IMG_2258](images/IMG_2258.jpeg)
-![IMG_2259](images/IMG_2259.jpeg)
-![IMG_2260](images/IMG_2260.jpeg)
-![IMG_2261](images/IMG_2261.jpeg)
-![IMG_2262](images/IMG_2262.jpeg)
-![IMG_2263](images/IMG_2263.jpeg)
+Lets start by looking at these illustrative sketches, I drew these to explore the themes and problem statement of the project. Through these sketches I explore a visual understanding of some tropes I have seen as well as the things I wish to address by doing this projcet.
+
+![Notebook sketch of Māori storytelling concepts: gestures illustrating cleansing after tapu, as seen on a cave tour and in the movie Coming Home in the Dark](images/IMG_2256.jpeg)
+![Notebook sketch of Aboriginal storytelling concepts: an elder giving advice that is ignored, leading to danger, referencing D'harawal stories and The Moogai](images/IMG_2257.jpeg)
+![Notebook drawing illustrating animal personification in Aboriginal stories, featuring a bird, person, and kangaroo conversing](images/IMG_2258.jpeg)
+![Notebook sketch proposing a Tropes Guide book to provide in-group cultural context for literary critics entering a new culture](images/IMG_2259.jpeg)
+![UI layout sketch of a movie detail page template showing where the poster, movie name, summary, and trope explanations are placed](images/IMG_2260.jpeg)
+![UI layout sketch of a list of top 10 cultural tropes to watch for, including spirals and ancestors](images/IMG_2261.jpeg)
+![Notebook sketch illustrating a generalist critic using western tropes versus a native storyteller, explaining how lack of context leads to misidentifications](images/IMG_2262.jpeg)
+![Notebook drawings explaining the Takarangi double spiral of creation and the Koru single spiral symbolizing growth and progress](images/IMG_2263.jpeg)
+
+# Concluding Take-Aways:
+I want to take my notes from my notebook and organize them in a database similar to the website TV tropes, I have started working on creating this and have a good framework down with the content being the only thing really lacking now, which is just a bit of copying from my notebook. From there I think the best next step would be to continue engaging with new cultures to find and catablogue their tropes like I have been. I might explore how well the "live Tweet" style of note taking works for this format, I initialy decided to use that format because I could learn the tropes through literature review at the library and then spend the afternoon watching the media and trying to call out the tropes as I see them. My general read at this point is that this has worked reasonably well but the data has a lot of extra stuff in it like my reactions to random jumpscares in the movies that means I have to sift through it a bit.
+
+![How I felt watching the movies after knowing the tropes, espescially on a second viewing](images/thats-it-yes-thats-it.gif)
