@@ -25,7 +25,7 @@ The fieldwork involved a mixture of the planned activities and visiting librarie
 
 ![The University of Auckland General Library, courtesy of Dan Google Maps User as I forgot to take pictures of the interior other than books lol](images/UAGL.jpg)
 
-![The University of Auckland General Library, A map of New Zealand found in The New Zealand Maori by William S Dale]
+![The University of Auckland General Library, A map of New Zealand found in The New Zealand Maori by William S Dale](images/book-in-UAGL.jpg)
 
 UAGL was closely followed by the State Library of New South Wales in Sydney Australia which had its own art gallery and a snazzy cafe.
 
@@ -40,7 +40,7 @@ Overall I think New Zealand had more awareness of their indigenous people than A
 # Timeline:
 
 # Sketches:
-Lets start by looking at these illustrative sketches, I drew these to explore the themes and problem statement of the project. Through these sketches I explore a visual understanding of some tropes I have seen as well as the things I wish to address by doing this projcet.
+Let's start by looking at these illustrative sketches. I drew these to explore the themes and problem statement of the project. Through these sketches, I explore a visual understanding of some tropes I have seen as well as the things I wish to address by doing this project.
 
 ![Notebook sketch of Māori storytelling concepts: gestures illustrating cleansing after tapu, as seen on a cave tour and in the movie Coming Home in the Dark](images/IMG_2256.jpeg)
 ![Notebook sketch of Aboriginal storytelling concepts: an elder giving advice that is ignored, leading to danger, referencing D'harawal stories and The Moogai](images/IMG_2257.jpeg)
@@ -51,7 +51,17 @@ Lets start by looking at these illustrative sketches, I drew these to explore th
 ![Notebook sketch illustrating a generalist critic using western tropes versus a native storyteller, explaining how lack of context leads to misidentifications](images/IMG_2262.jpeg)
 ![Notebook drawings explaining the Takarangi double spiral of creation and the Koru single spiral symbolizing growth and progress](images/IMG_2263.jpeg)
 
-# Concluding Take-Aways:
-I want to take my notes from my notebook and organize them in a database similar to the website TV tropes, I have started working on creating this and have a good framework down with the content being the only thing really lacking now, which is just a bit of copying from my notebook. From there I think the best next step would be to continue engaging with new cultures to find and catablogue their tropes like I have been. I might explore how well the "live Tweet" style of note taking works for this format, I initialy decided to use that format because I could learn the tropes through literature review at the library and then spend the afternoon watching the media and trying to call out the tropes as I see them. My general read at this point is that this has worked reasonably well but the data has a lot of extra stuff in it like my reactions to random jumpscares in the movies that means I have to sift through it a bit.
+Next let's look at the design sketches for the Tropes Site and this Reflection!
 
-![How I felt watching the movies after knowing the tropes, espescially on a second viewing](images/thats-it-yes-thats-it.gif)
+![Timeline spiral layout design sketch with curved text blocks and a viewport indicator](images/Data%20Strange%20Final%20Project%20Designs-1.jpg)
+![UI layout mockup of the media list view with category filters and media item cards](images/Data%20Strange%20Final%20Project%20Designs-2.jpg)
+![UI layout mockup of the tropes list view with a detail card explaining the selected trope](images/Data%20Strange%20Final%20Project%20Designs-3.jpg)
+![UI layout mockup of the movie detail view showing a play-by-play narrative notes section linked to tropes](images/Data%20Strange%20Final%20Project%20Designs-4.jpg)
+![Database schema outline showing the data formats for movie and trope objects](images/Data%20Strange%20Final%20Project%20Designs-5.jpg)
+![Graph data model diagram showing relationships between movies, tropes, and cultures](images/Data%20Strange%20Final%20Project%20Designs-6.jpg)
+![Markup style demo demonstrating custom trope-tag HTML elements for annotating script summaries](images/Data%20Strange%20Final%20Project%20Designs-7.jpg)
+
+# Concluding Take-Aways:
+I want to take my notes from my notebook and organize them in a database similar to the website TV tropes, I have started working on creating this and have a good framework down with the content being the only thing really lacking now, which is just a bit of copying from my notebook. From there I think the best next step would be to continue engaging with new cultures to find and catalogue their tropes like I have been. I might explore how well the "live Tweet" style of note taking works for this format, I initially decided to use that format because I could learn the tropes through literature review at the library and then spend the afternoon watching the media and trying to call out the tropes as I see them. My general read at this point is that this has worked reasonably well but the data has a lot of extra stuff in it like my reactions to random jumpscares in the movies that means I have to sift through it a bit.
+
+![How I felt watching the movies after knowing the tropes, especially on a second viewing](images/thats-it-yes-thats-it.gif)
