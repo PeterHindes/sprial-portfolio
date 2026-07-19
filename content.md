@@ -1,4 +1,4 @@
-![An Aboriginal Painting](images/paintings.jpg)
+![An Aboriginal Painting, showing the dot trope/motif that is common in Aboriginal Paintings](images/paintings.jpg)
 
 # The Team:
 Peter Hindes
@@ -65,3 +65,5 @@ Next let's look at the design sketches for the Tropes Site and this Reflection!
 I want to take my notes from my notebook and organize them in a database similar to the website TV tropes, I have started working on creating this and have a good framework down with the content being the only thing really lacking now, which is just a bit of copying from my notebook. From there I think the best next step would be to continue engaging with new cultures to find and catalogue their tropes like I have been. I might explore how well the "live Tweet" style of note taking works for this format, I initially decided to use that format because I could learn the tropes through literature review at the library and then spend the afternoon watching the media and trying to call out the tropes as I see them. My general read at this point is that this has worked reasonably well but the data has a lot of extra stuff in it like my reactions to random jumpscares in the movies that means I have to sift through it a bit.
 
 ![How I felt watching the movies after knowing the tropes, especially on a second viewing](images/thats-it-yes-thats-it.gif)
+
+![A screen shot of the culture tropes webpage for the project with some dummy data for testing the layout.](images/cluturetropes.png)
