@@ -930,6 +930,20 @@ Indeed, sample text is nice to have around when designing and prototyping new id
                 'stroke-width': 3, 'stroke-linecap': 'round'
             }));
 
+            if (alt) {
+                const capFO = sv('foreignObject', {
+                    x: -W / 2, y: H / 2 + 12, width: W, height: 60
+                });
+                const capDiv = document.createElement('div');
+                capDiv.style.font = "italic 400 10px/1.4 'Inter', sans-serif";
+                capDiv.style.color = "rgba(229, 204, 179, 0.7)";
+                capDiv.style.textAlign = "center";
+                capDiv.style.textShadow = "0 1px 2px rgba(0,0,0,0.8)";
+                capDiv.textContent = alt;
+                capFO.appendChild(capDiv);
+                g.appendChild(capFO);
+            }
+
             sceneGroup.appendChild(g);
         }
 
