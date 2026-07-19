@@ -980,83 +980,34 @@ Indeed, sample text is nice to have around when designing and prototyping new id
             sceneGroup.appendChild(fo);
         }
 
-        // ---- IMAGE: card with rounded corners ----
+        // ---- IMAGE: frameless image scaled without cropping edges ----
         function placeImage(t, src, alt, idx) {
             const p = spiralPoint(t);
             const deg = tangentAngle(t) * 180 / Math.PI;
-            const W = 240, H = 170, P = 10, R = 10;
-
-            const clipId = 'ic' + idx;
-            const clip = sv('clipPath', { id: clipId });
-            clip.appendChild(sv('rect', {
-                x: -(W / 2 - P), y: -(H / 2 - P),
-                width: W - P * 2, height: H - P * 2, rx: R
-            }));
-            defs.appendChild(clip);
+            const maxW = 320, maxH = 220;
 
             const g = sv('g', {
                 transform: `translate(${p.x.toFixed(1)},${p.y.toFixed(1)}) rotate(${deg.toFixed(2)})`
             });
 
-            // Card shadow (vector-based, no filter)
-            g.appendChild(sv('rect', {
-                x: -W / 2 + 2, y: -H / 2 + 3, width: W, height: H, rx: 14,
-                fill: 'rgba(0, 0, 0, 0.35)',
-                stroke: 'none'
-            }));
-
-            // Card background
-            g.appendChild(sv('rect', {
-                x: -W / 2, y: -H / 2, width: W, height: H, rx: 14,
-                fill: 'rgba(22, 6, 6, 0.92)',
-                stroke: 'rgba(255, 179, 0, 0.45)', 'stroke-width': 1.5
-            }));
-
+            // SVG image element with 'xMidYMid meet' fits whole image preserving aspect ratio
             const img = sv('image', {
-                x: -(W / 2 - P), y: -(H / 2 - P),
-                width: W - P * 2, height: H - P * 2,
-                preserveAspectRatio: 'xMidYMid slice',
-                'clip-path': `url(#${clipId})`,
+                x: -maxW / 2, y: -maxH / 2,
+                width: maxW, height: maxH,
+                preserveAspectRatio: 'xMidYMid meet',
                 href: src
             });
             g.appendChild(img);
 
-            // Decorative Corner dot motifs — batched into paths instead of individual circles
-            const corners = [
-                { x: -W / 2 - 2, y: -H / 2 - 2 },
-                { x:  W / 2 + 2, y: -H / 2 - 2 },
-                { x: -W / 2 - 2, y:  H / 2 + 2 },
-                { x:  W / 2 + 2, y:  H / 2 + 2 }
-            ];
-            // Center dots (gold) — batched
-            let centerD = '';
-            let ringD = '';
-            corners.forEach(c => {
-                centerD += `M${c.x},${c.y}h0.1 `;
-                const r = 7;
-                for (let k = 0; k < 6; k++) {
-                    const a = (k / 6) * 2 * Math.PI;
-                    ringD += `M${(c.x + r * Math.cos(a)).toFixed(1)},${(c.y + r * Math.sin(a)).toFixed(1)}h0.1 `;
-                }
-            });
-            g.appendChild(sv('path', {
-                d: centerD, fill: 'none', stroke: '#ffe680',
-                'stroke-width': 4.4, 'stroke-linecap': 'round'
-            }));
-            g.appendChild(sv('path', {
-                d: ringD, fill: 'none', stroke: '#ffb300',
-                'stroke-width': 3, 'stroke-linecap': 'round'
-            }));
-
             if (alt) {
                 const capFO = sv('foreignObject', {
-                    x: -W / 2, y: H / 2 + 12, width: W, height: 60
+                    x: -maxW / 2, y: maxH / 2 + 6, width: maxW, height: 60
                 });
                 const capDiv = document.createElement('div');
-                capDiv.style.font = "italic 400 10px/1.4 'Inter', sans-serif";
-                capDiv.style.color = "rgba(229, 204, 179, 0.7)";
+                capDiv.style.font = "italic 400 11px/1.4 'Inter', sans-serif";
+                capDiv.style.color = "rgba(235, 215, 195, 0.85)";
                 capDiv.style.textAlign = "center";
-                capDiv.style.textShadow = "0 1px 2px rgba(0,0,0,0.8)";
+                capDiv.style.textShadow = "0 2px 4px rgba(0,0,0,0.95), 0 0 8px rgba(0,0,0,0.9)";
                 capDiv.textContent = alt;
                 capFO.appendChild(capDiv);
                 g.appendChild(capFO);
