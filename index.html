@@ -113,6 +113,7 @@
             text-transform: uppercase;
             z-index: 200;
             pointer-events: none;
+            text-align: center;
         }
 
         .scroll-hint .arrow {
@@ -334,7 +335,10 @@
         <button class="zoom-btn" onclick="zoomIn()">+</button>
     </div>
     <div class="scroll-hint" id="scrollHint">
-        Scroll to explore the timeline
+        Scroll down to proceed
+        <span style="display: block; font-size: 10px; opacity: 0.75; letter-spacing: 1px; text-transform: none; margin-top: 4px;">
+            Pinch to zoom or use the top bar to skip through
+        </span>
         <span class="arrow">↓</span>
     </div>
 
