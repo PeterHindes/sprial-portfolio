@@ -48,15 +48,57 @@
             transform-origin: 0 0;
         }
 
-        .progress-bar {
+        .progress-track {
             position: fixed;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 12px;
+            z-index: 200;
+            cursor: pointer;
+        }
+
+        .progress-bar {
             height: 4px;
             width: 0%;
             background: linear-gradient(90deg, #b32400, #ff6600, #ffcc00);
-            z-index: 200;
             box-shadow: 0 0 14px rgba(255, 102, 0, 0.5);
+            pointer-events: none;
+        }
+
+        .zoom-controls {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(22, 6, 6, 0.92);
+            border: 1.5px solid rgba(255, 179, 0, 0.38);
+            border-radius: 8px;
+            padding: 6px 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        }
+        .zoom-btn {
+            background: none;
+            border: none;
+            color: #ffe680;
+            font-size: 18px;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: color 0.2s;
+        }
+        .zoom-btn:hover {
+            color: #ff6600;
+        }
+        .zoom-level {
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            color: #e5ccb3;
+            min-width: 40px;
+            text-align: center;
         }
 
         .scroll-hint {
@@ -283,7 +325,14 @@
     </div>
 
     <div class="vignette"></div>
-    <div class="progress-bar" id="progressBar"></div>
+    <div class="progress-track" id="progressTrack">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomOut()">-</button>
+        <span class="zoom-level" id="zoomLevelDisplay">100%</span>
+        <button class="zoom-btn" onclick="zoomIn()">+</button>
+    </div>
     <div class="scroll-hint" id="scrollHint">
         Scroll to explore the timeline
         <span class="arrow">↓</span>
@@ -1011,6 +1060,19 @@ Indeed, sample text is nice to have around when designing and prototyping new id
         // Cached DOM references (set once at init)
         let $sceneWrapper, $scrollDriver, $progressBar, $scrollHint;
         let scrollMax = 1;
+        let zoomLevel = 1;
+
+        window.zoomIn = function() {
+            zoomLevel = Math.min(zoomLevel + 0.2, 3);
+            document.getElementById('zoomLevelDisplay').textContent = Math.round(zoomLevel * 100) + '%';
+            applyTransform(currentOffset);
+        };
+
+        window.zoomOut = function() {
+            zoomLevel = Math.max(zoomLevel - 0.2, 0.4);
+            document.getElementById('zoomLevelDisplay').textContent = Math.round(zoomLevel * 100) + '%';
+            applyTransform(currentOffset);
+        };
 
         function applyTransform(offset) {
             const t = offsetToT(offset);
@@ -1018,7 +1080,7 @@ Indeed, sample text is nice to have around when designing and prototyping new id
             const deg = tangentAngle(t) * 180 / Math.PI;
             const vw = window.innerWidth;
             const vh = window.innerHeight;
-            const scale = Math.min(vw, vh) / 700;
+            const scale = (Math.min(vw, vh) / 700) * zoomLevel;
 
             $sceneWrapper.style.transform =
                 `translate(${vw / 2}px,${vh / 2}px) ` +
@@ -1166,6 +1228,12 @@ Indeed, sample text is nice to have around when designing and prototyping new id
 
             // Attach passive scroll listener (replaces rAF loop)
             window.addEventListener('scroll', onScroll, { passive: true });
+            
+            document.getElementById('progressTrack').addEventListener('click', (e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const frac = (e.clientX - rect.left) / rect.width;
+                window.scrollTo({ top: frac * scrollMax, behavior: 'smooth' });
+            });
             window.addEventListener('resize', () => {
                 scrollMax = $scrollDriver.offsetHeight - window.innerHeight;
                 onScroll();
